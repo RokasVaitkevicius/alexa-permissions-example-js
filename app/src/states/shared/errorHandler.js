@@ -6,6 +6,7 @@ const ErrorHandler = {
     const { attributesManager } = handlerInput
     const { speech } = attributesManager.getRequestAttributes()
 
+    console.log(error)
     console.log(JSON.stringify(error, null, 2))
     speech.say('Something bad happened. Please try to restart the skill.')
 

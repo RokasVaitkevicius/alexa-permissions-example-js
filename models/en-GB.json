@@ -27,7 +27,15 @@
           "name": "PermissionsIntent",
           "slots": [],
           "samples": [
-            "give me user data"
+            "give me user data",
+            "give me user info"
+          ]
+        },
+        {
+          "name": "DeviceInfoIntent",
+          "slots": [],
+          "samples": [
+            "give me device info"
           ]
         }
       ],
