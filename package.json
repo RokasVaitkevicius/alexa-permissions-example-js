@@ -1,0 +1,37 @@
+{
+  "name": "alexa-permissions-example-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node ./bin/mergeJson.js",
+    "build": "rm -rf ./lambda/custom/src && babel app -d lambda/custom --presets node8 --copy-files --quiet --source-maps inline && cd ./lambda/custom && cd -",
+    "test": "npm run-script build && NODE_ENV=test mocha --exit",
+    "lint": "eslint ./app",
+    "fix": "eslint ./app --fix",
+    "start": "npm-run-all -p watch bst",
+    "watch": "nodemon --exec 'npm run-script build' --watch app",
+    "bst": "bst proxy lambda lambda/custom/index.js",
+    "deploy": "npm run-script build && ask deploy --target lambda"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ask-sdk": "^2.3.0",
+    "ssml-builder": "^0.4.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-node8": "^1.2.0",
+    "bespoken-tools": "^2.1.1",
+    "chai": "^4.2.0",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "mocha": "^5.2.0",
+    "npm-run-all": "^4.1.3",
+    "virtual-alexa": "^0.6.14"
+  }
+}

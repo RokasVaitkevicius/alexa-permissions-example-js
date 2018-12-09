@@ -1,0 +1,13 @@
+{
+  "name": "alexa-skill-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ask-sdk": "^2.3.0",
+    "ssml-builder": "^0.4.3",
+    "request": "^2.88.0"
+  }
+}

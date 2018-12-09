@@ -59,3 +59,7 @@ typings/
 
 # next.js build output
 .next
+
+# lambda folder ignore
+lambda/custom/*
+!lambda/custom/package.json
