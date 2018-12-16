@@ -22,7 +22,9 @@ const DeviceInfoIntent = {
       upsServiceClient.getSystemTimeZone(deviceId),
     ]
 
-    const [distanceUnits, temperatureUnits, timeZone] = await Promise.all(servicesPromiseArray.map(p => p.catch(e => e)))
+    const [distanceUnits, temperatureUnits, timeZone] = await Promise
+      .all(servicesPromiseArray
+        .map(p => p.catch(e => e)))
 
     speech.say('This is device info intent. Device info is displayed in the card.')
     reprompt.say('Device info intent reprompt')
@@ -30,7 +32,11 @@ const DeviceInfoIntent = {
     return responseBuilder
       .speak(speech.ssml(true))
       .reprompt(reprompt.ssml(true))
-      .withSimpleCard('Device Info', JSON.stringify({ distanceUnits, temperatureUnits, timeZone }, null, 2))
+      .withSimpleCard('Device Info', JSON.stringify(
+        { distanceUnits, temperatureUnits, timeZone },
+        (k, v) => (v === undefined ? null : v),
+        2,
+      ))
       .getResponse()
   },
 }

@@ -1,9 +1,4 @@
-const MISSING_PERMISSIONS = {
-  address: 'read::alexa:device:all:address',
-  email: 'alexa::profile:email:read',
-  name: 'alexa::profile:name:read',
-  mobileNumber: 'alexa::profile:mobile_number:read',
-}
+import { missingUserPermissions } from '../../helpers'
 
 const PermissionsIntent = {
   canHandle(handlerInput) {
@@ -18,6 +13,7 @@ const PermissionsIntent = {
       requestEnvelope,
       serviceClientFactory,
     } = handlerInput
+
     const { speech, reprompt } = attributesManager.getRequestAttributes()
     const { user } = requestEnvelope.context.System
     const { deviceId } = requestEnvelope.context.System.device
@@ -27,11 +23,10 @@ const PermissionsIntent = {
 
     if (!user.permissions || !user.permissions.consentToken) {
       speech.say('Consent token is not available. Card added to give me missing permissions.')
-
       return responseBuilder
         .speak(speech.ssml(true))
         .reprompt(reprompt.ssml(true))
-        .withAskForPermissionsConsentCard(Object.values(MISSING_PERMISSIONS))
+        .withAskForPermissionsConsentCard(missingUserPermissions())
         .getResponse()
     }
 
@@ -45,39 +40,30 @@ const PermissionsIntent = {
       upsServiceClient.getProfileMobileNumber(),
     ]
 
-    const [address, email, name, mobileNumber] = await Promise.all(servicesPromiseArray.map(p => p.catch(e => e.name)))
+    const [address, email, name, mobileNumber] = await Promise
+      .all(servicesPromiseArray
+        .map(p => p.catch(e => e.response.code)))
 
-    const missingPermissions = []
-
-    if (address === 'ServiceError') {
-      missingPermissions.push(MISSING_PERMISSIONS.address)
+    const userData = {
+      address,
+      email,
+      name,
+      mobileNumber,
     }
 
-    if (email === 'ServiceError') {
-      missingPermissions.push(MISSING_PERMISSIONS.email)
-    }
-
-    if (name === 'ServiceError') {
-      missingPermissions.push(MISSING_PERMISSIONS.name)
-    }
-
-    if (mobileNumber === 'ServiceError') {
-      missingPermissions.push(MISSING_PERMISSIONS.mobileNumber)
-    }
+    const missingPermissions = missingUserPermissions(userData)
 
     if (missingPermissions.length > 0) {
       speech.say('Some permissions are missing. Permssions card is displayed.')
       responseBuilder.withAskForPermissionsConsentCard(missingPermissions)
     } else {
       speech.say('All permissions are given. User info is displayed in the card.')
-      responseBuilder.withSimpleCard('User info', JSON.stringify({ address, email, name, mobileNumber }, null, 2))
+      responseBuilder.withSimpleCard('User info', JSON.stringify(
+        userData,
+        (k, v) => (v === undefined ? null : v),
+        2,
+      ))
     }
-
-    console.log(address)
-    console.log(email)
-    console.log(name)
-    console.log(mobileNumber)
-
 
     return responseBuilder
       .speak(speech.ssml(true))
